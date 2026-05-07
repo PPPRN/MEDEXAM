@@ -24,10 +24,10 @@
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect,useRef,useCallback}=React;
- 
+
 // ── CONFIG ──────────────────────────────────────
 const API_URL="https://script.google.com/macros/s/AKfycbxBmQjkyxudIuKx3KckZXXKP_MTs6SJXgKByoN_fTz5jyH03uIeZttrixrMeTpJkhfo/exec";
- 
+
 // ── SHEET API ────────────────────────────────────
 async function sg(params){
   const qs=Object.keys(params).map(k=>k+"="+encodeURIComponent(params[k])).join("&");
@@ -38,14 +38,14 @@ async function sp(body){
   try{const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)});const t=await r.text();return JSON.parse(t);}
   catch(e){return{ok:false,error:e.message};}
 }
- 
+
 // ── COLORS ───────────────────────────────────────
 const C={bg:"#F2F2F7",white:"#fff",text:"#1C1C1E",sub:"#8E8E93",border:"#E5E5EA",
   blue:"#007AFF",green:"#34C759",orange:"#FF9500",red:"#FF3B30",purple:"#5856D6"};
 const TC={MCQ:C.blue,MEQ:C.green,OSCE:C.orange};
 const UCOLS=["#007AFF","#5856D6","#34C759","#FF9500","#FF2D55","#00C7BE"];
 const ucol=n=>{let h=0;for(const c of(n||""))h+=c.charCodeAt(0);return UCOLS[h%UCOLS.length];};
- 
+
 // ── STYLES ───────────────────────────────────────
 const S={
   app:{fontFamily:"inherit",background:C.bg,minHeight:"100vh",width:"100%"},
@@ -67,7 +67,7 @@ const S={
   stit:{fontSize:20,fontWeight:700,color:C.text,marginBottom:18,letterSpacing:-0.4},
   badge:(col)=>({background:col+"22",color:col,borderRadius:8,padding:"3px 9px",fontSize:12,fontWeight:700}),
 };
- 
+
 // ── LAYOUT HOOK ──────────────────────────────────
 function useLayout(){
   const [ls,setLs]=useState(()=>window.innerWidth>window.innerHeight);
@@ -78,15 +78,15 @@ function useLayout(){
   },[]);
   return{landscape:ls};
 }
- 
+
 // ── MINI COMPONENTS ──────────────────────────────
 function Spin(){return <div style={{display:"flex",justifyContent:"center",padding:48}}><div style={{width:32,height:32,borderRadius:"50%",border:"3px solid #E5E5EA",borderTopColor:C.blue,animation:"sp .7s linear infinite"}}/><style>{`@keyframes sp{to{transform:rotate(360deg)}}`}</style></div>;}
- 
+
 function Toast({msg,onClose}){
   useEffect(()=>{const t=setTimeout(onClose,3000);return()=>clearTimeout(t);},[]);
   return <div style={{position:"fixed",bottom:88,left:"50%",transform:"translateX(-50%)",background:"#1C1C1E",color:"white",borderRadius:14,padding:"11px 20px",fontSize:14,fontWeight:500,zIndex:900,maxWidth:"88vw",textAlign:"center",boxShadow:"0 6px 24px rgba(0,0,0,0.28)"}}>{msg}</div>;
 }
- 
+
 function Confirm({title,msg,onOk,onCancel,okLabel="Delete",color=C.red}){
   const{landscape}=useLayout();
   return <div style={S.overlay} onClick={onCancel}>
@@ -101,7 +101,7 @@ function Confirm({title,msg,onOk,onCancel,okLabel="Delete",color=C.red}){
     </div>
   </div>;
 }
- 
+
 function PwField({value,onChange,placeholder="Password",inputStyle={}}){
   const[show,setShow]=useState(false);
   return <div style={{position:"relative"}}>
@@ -111,7 +111,7 @@ function PwField({value,onChange,placeholder="Password",inputStyle={}}){
     </button>
   </div>;
 }
- 
+
 function Avatar({name,size=34}){
   const col=ucol(name);
   const ini=(name||"?").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
@@ -119,13 +119,13 @@ function Avatar({name,size=34}){
     <span style={{fontSize:size*0.38,fontWeight:700,color:col}}>{ini}</span>
   </div>;
 }
- 
+
 function timeAgo(ts){
   const d=(Date.now()-ts)/1000;
   if(d<60)return"just now";if(d<3600)return Math.floor(d/60)+"m ago";
   if(d<86400)return Math.floor(d/3600)+"h ago";return new Date(ts).toLocaleDateString();
 }
- 
+
 // ── WATERMARK ────────────────────────────────────
 function Watermark({name}){
   const tiles=[];
@@ -134,7 +134,7 @@ function Watermark({name}){
     {tiles.map(i=><div key={i} style={{fontSize:15,fontWeight:700,color:"rgba(0,0,0,0.08)",letterSpacing:2,whiteSpace:"nowrap",userSelect:"none"}}>{name.toUpperCase()}</div>)}
   </div>;
 }
- 
+
 // ── COMMENTS ─────────────────────────────────────
 function Comments({comments=[],qid,qnum,me,subject,onRefresh}){
   const[text,setText]=useState("");
@@ -174,7 +174,7 @@ function Comments({comments=[],qid,qnum,me,subject,onRefresh}){
     </div>
   </div>;
 }
- 
+
 // ── LOGIN ─────────────────────────────────────────
 function LoginPage({users,onLogin}){
   const[sel,setSel]=useState(null);
@@ -207,7 +207,7 @@ function LoginPage({users,onLogin}){
     </div>
   </div>;
 }
- 
+
 // ── SUBJECTS ──────────────────────────────────────
 function SubjectsPage({subjects,onSelect,onAdd,onDelete,onSettings}){
   const{landscape}=useLayout();
@@ -255,7 +255,7 @@ function SubjectsPage({subjects,onSelect,onAdd,onDelete,onSettings}){
     {conf&&<Confirm title="Delete Subject" msg={"Delete \""+conf.name+"\" and all its questions?"} onOk={()=>{onDelete(conf);setConf(null);}} onCancel={()=>setConf(null)}/>}
   </div>;
 }
- 
+
 // ── TOPICS ────────────────────────────────────────
 function TopicsPage({subject,questions,onBack,onTopic,onSettings}){
   const{landscape}=useLayout();
@@ -283,7 +283,7 @@ function TopicsPage({subject,questions,onBack,onTopic,onSettings}){
     </div>
   </div>;
 }
- 
+
 // ── QUESTIONS ─────────────────────────────────────
 function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefresh,onSettings}){
   const{landscape}=useLayout();
@@ -297,7 +297,7 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
   const[aiLoading,setAiLoading]=useState(null);
   const fileRef=useRef();
   const list=questions.filter(q=>q.topic===topic||!q.topic);
- 
+
   const sim=(a,b)=>{
     const ta=a.toLowerCase().split(/\s+/),tb=b.toLowerCase().split(/\s+/);
     const sa={},sb={};for(const w of ta)sa[w]=1;for(const w of tb)sb[w]=1;
@@ -305,7 +305,7 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
     const union=Object.keys({...sa,...sb}).length;
     return union===0?0:inter/union;
   };
- 
+
   const tryAdd=()=>{
     if(!nQ.trim()||!nA.trim()){setToast("Fill in question and answer");return;}
     if(!override){
@@ -314,13 +314,13 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
     onAdd({question:nQ.trim(),answer:nA.trim(),topic});
     setNQ("");setNA("");setDup(null);setOverride(false);setShowAdd(false);
   };
- 
+
   const runAI=async(q)=>{
     const apiKey=localStorage.getItem("medexam_apikey")||"";
     if(!apiKey){setToast("Set your Gemini API key in Settings first");return;}
     setAiLoading(q.id);
     try{
-      const resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+apiKey,{
+      const resp=await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+apiKey,{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
@@ -336,7 +336,7 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
     }catch(e){setToast("AI error: "+e.message);}
     setAiLoading(null);
   };
- 
+
   return <div style={{background:C.bg,minHeight:"100vh"}}>
     <div style={S.nav(landscape)}>
       <button style={S.navBtn} onClick={onBack}>‹ Topics</button>
@@ -364,7 +364,7 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
             <p style={S.lbl}>Answer</p>
             <p style={{fontSize:15,color:"#3C3C43",lineHeight:1.65,margin:0}}>{q.answer}</p>
           </div>
- 
+
           {/* AI Correction */}
           {q.aiCorrection?<div style={{background:"#5856D608",border:"1px solid #5856D622",borderRadius:12,padding:14,marginBottom:12}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
@@ -388,12 +388,12 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
             <span style={{fontSize:16}}>✨</span>
             {aiLoading===q.id?"Analyzing…":"Get AI Correction"}
           </button>}
- 
+
           <Comments comments={q.comments||[]} qid={q.id} qnum={q.num} me={me} subject={subject.name} onRefresh={onRefresh}/>
         </>}
       </div>)}
     </div>
- 
+
     {showAdd&&<div style={S.overlay} onClick={()=>{setShowAdd(false);setDup(null);setOverride(false);}}>
       <div style={S.sheet(landscape)} onClick={e=>e.stopPropagation()}>
         <div style={S.hdl}/>
@@ -413,12 +413,12 @@ function QuestionsPage({subject,topic,questions,me,onBack,onAdd,onDelete,onRefre
         </div>
       </div>
     </div>}
- 
+
     {conf&&<Confirm title="Delete Question" msg="Delete this question permanently?" onOk={()=>{onDelete(conf);setConf(null);setToast("Deleted");}} onCancel={()=>setConf(null)}/>}
     {toast&&<Toast msg={toast} onClose={()=>setToast("")}/>}
   </div>;
 }
- 
+
 // ── SETTINGS ──────────────────────────────────────
 function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink,onLogout}){
   const{landscape}=useLayout();
@@ -437,7 +437,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
   const[apiKey,setApiKey]=useState(()=>{try{return localStorage.getItem("medexam_apikey")||"";}catch{return"";}});
   const[showApiKey,setShowApiKey]=useState(false);
   const admin=users[0];
- 
+
   const openAddGate=()=>{setGatePw("");setGateErr("");setAdminGateFor("addUser");setAdminGate(true);};
   const openSheetGate=()=>{setGatePw("");setGateErr("");setAdminGateFor("sheet");setAdminGate(true);};
   const confirmGate=()=>{
@@ -461,18 +461,18 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
     onUpdateUsers(users.filter(x=>x.id!==u.id));setConf(null);setToast("Deleted");
   };
   const saveSheetLink=()=>{onUpdateSheetLink(linkInput.trim());setShowSheet(false);setToast("Saved ✓");};
- 
+
   return <div style={{background:C.bg,minHeight:"100vh"}}>
     <div style={S.nav(landscape)}>
       <button style={S.navBtn} onClick={onBack}>‹ Back</button>
       <span style={S.navTit}>Settings</span>
       <div style={{minWidth:60}}/>
     </div>
- 
+
     <div style={{display:"flex",margin:"12px 14px 0",background:C.border,borderRadius:12,padding:3,gap:3}}>
       {[["general","General"],["export","Export"]].map(([key,label])=><button key={key} onClick={()=>setTab(key)} style={{flex:1,padding:"8px 0",borderRadius:9,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:600,background:tab===key?C.white:"transparent",color:tab===key?C.text:C.sub,boxShadow:tab===key?"0 1px 4px rgba(0,0,0,0.1)":"none"}}>{label}</button>)}
     </div>
- 
+
     <div style={S.page(landscape)}>
     {tab==="export"?<>
       <div style={S.card}>
@@ -489,7 +489,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
           </div>
         </div>
       </div>
- 
+
       <div style={{...S.card,display:"flex",alignItems:"center",gap:10,marginBottom:16,padding:"12px 14px"}}>
         <span style={{fontSize:20}}>🛡</span>
         <div style={{flex:1}}>
@@ -497,7 +497,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
           <p style={{margin:0,fontSize:12,color:C.sub}}>"{admin.name}" — required to add users</p>
         </div>
       </div>
- 
+
       <p style={S.lbl}>AI Correction</p>
       <div style={{...S.card,marginBottom:20,padding:"14px"}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
@@ -518,7 +518,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
           Save API Key
         </button>
       </div>
- 
+
       <p style={S.lbl}>Google Sheet</p>
       <div style={{...S.card,marginBottom:20,padding:"14px"}}>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
@@ -540,7 +540,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
           🔒 {sheetLink?"Edit Link (Admin)":"Set Link (Admin)"}
         </button>}
       </div>
- 
+
       <p style={S.lbl}>Users</p>
       {users.map(u=><div key={u.id} style={{...S.card,padding:"12px 14px",marginBottom:8}}>
         <div style={{display:"flex",alignItems:"center"}}>
@@ -555,14 +555,14 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
           </div>
         </div>
       </div>)}
- 
+
       <button style={{...S.btnS,display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginTop:8,marginBottom:28}} onClick={openAddGate}>
         ➕ Add New User
       </button>
       <button style={{...S.btnR,width:"100%"}} onClick={onLogout}>Sign Out</button>
     </>}
     </div>
- 
+
     {adminGate&&<div style={S.overlay} onClick={()=>setAdminGate(false)}>
       <div style={S.sheet(landscape)} onClick={e=>e.stopPropagation()}>
         <div style={S.hdl}/>
@@ -581,7 +581,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
         </div>
       </div>
     </div>}
- 
+
     {editing&&<div style={S.overlay} onClick={()=>setEditing(null)}>
       <div style={S.sheet(landscape)} onClick={e=>e.stopPropagation()}>
         <div style={S.hdl}/>
@@ -596,7 +596,7 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
         </div>
       </div>
     </div>}
- 
+
     {showAdd&&<div style={S.overlay} onClick={()=>setShowAdd(false)}>
       <div style={S.sheet(landscape)} onClick={e=>e.stopPropagation()}>
         <div style={S.hdl}/>
@@ -611,12 +611,12 @@ function SettingsPage({users,me,sheetLink,onBack,onUpdateUsers,onUpdateSheetLink
         </div>
       </div>
     </div>}
- 
+
     {conf&&<Confirm title="Delete" msg={"Remove \""+conf.name+"\"?"} onOk={()=>delUser(conf)} onCancel={()=>setConf(null)}/>}
     {toast&&<Toast msg={toast} onClose={()=>setToast("")}/>}
   </div>;
 }
- 
+
 // ── ROOT ──────────────────────────────────────────
 function App(){
   const[users,setUsers]=useState([]);
@@ -630,7 +630,7 @@ function App(){
   const[loading,setLoading]=useState("");
   const[toast,setToast]=useState("");
   const[sheetLink,setSheetLink]=useState(()=>{try{return localStorage.getItem("medexam_sheet")||"";}catch{return"";}});
- 
+
   useEffect(()=>{
     setLoading("Connecting to Google Sheets…");
     sg({action:"getUsers"}).then(r=>{
@@ -639,14 +639,14 @@ function App(){
     }).catch(e=>setToast("Cannot connect: "+e.message))
     .finally(()=>{setLoading("");setReady(true);});
   },[]);
- 
+
   const loadSubjects=useCallback(async()=>{
     setLoading("Loading subjects…");
     const r=await sg({action:"getSubjects"});
     if(r.ok)setSubjects((r.subjects||[]).map((n,i)=>({id:"s_"+i+"_"+n,name:n})));
     setLoading("");
   },[]);
- 
+
   const loadQuestions=useCallback(async(subjectName)=>{
     setLoading("Loading questions…");
     const r=await sg({action:"getQuestions",subject:subjectName});
@@ -654,7 +654,7 @@ function App(){
     else setToast("Error: "+r.error);
     setLoading("");
   },[]);
- 
+
   const addSubject=async(name)=>{
     setLoading("Creating…");
     const r=await sp({action:"addSubject",name});
@@ -662,7 +662,7 @@ function App(){
     else setToast("Error: "+r.error);
     setLoading("");
   };
- 
+
   const delSubject=async(s)=>{
     setLoading("Deleting…");
     const r=await sp({action:"deleteSubject",name:s.name});
@@ -670,7 +670,7 @@ function App(){
     else setToast("Error: "+r.error);
     setLoading("");
   };
- 
+
   const addQuestion=async(q)=>{
     setLoading("Saving…");
     const r=await sp({action:"addQuestion",subject:subject.name,question:q.question,answer:q.answer,addedBy:user.name,topic:q.topic});
@@ -678,7 +678,7 @@ function App(){
     else setToast("Error: "+r.error);
     setLoading("");
   };
- 
+
   const delQuestion=async(q)=>{
     setLoading("Deleting…");
     const r=await sp({action:"deleteQuestion",subject:subject.name,num:q.num});
@@ -686,7 +686,7 @@ function App(){
     else setToast("Error: "+r.error);
     setLoading("");
   };
- 
+
   const updateUsers=async(updated)=>{
     for(const u of updated){
       const old=users.find(x=>x.id===u.id);
@@ -698,22 +698,22 @@ function App(){
     if(r.ok&&r.users)setUsers(r.users);
     setToast("Users saved ✓");
   };
- 
+
   const updateSheetLink=(url)=>{
     try{localStorage.setItem("medexam_sheet",url);}catch{}
     setSheetLink(url);setToast("Saved ✓");
   };
- 
+
   const backFromSettings=()=>{
     if(topic&&subject)setPage("questions");
     else if(subject)setPage("topics");
     else setPage("subjects");
   };
- 
+
   if(!ready||loading)return <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",minHeight:"100vh",background:C.bg,gap:16}}>
     <Spin/>{loading&&<p style={{color:C.sub,fontSize:15}}>{loading}</p>}
   </div>;
- 
+
   return <div style={{...S.app,userSelect:"none",WebkitUserSelect:"none"}}>
     {user&&<Watermark name={user.name}/>}
     {toast&&<Toast msg={toast} onClose={()=>setToast("")}/>}
@@ -724,8 +724,8 @@ function App(){
     {page==="settings"&&user&&<SettingsPage users={users} me={user} sheetLink={sheetLink} onBack={backFromSettings} onUpdateUsers={updateUsers} onUpdateSheetLink={updateSheetLink} onLogout={()=>{setUser(null);setSubject(null);setTopic(null);setQuestions([]);setPage("login");}}/>}
   </div>;
 }
- 
+
 ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
 </script>
 </body>
-</html
+</html>
